@@ -1,32 +1,19 @@
 defmodule Stack do
-  use GenServer
-
   def start_link do
-    GenServer.start_link __MODULE__, []
+    Agent.start_link fn -> [] end
   end
 
   def size(pid) do
-    GenServer.call pid, :size
+    Agent.get pid, fn stack -> Enum.count(stack) end
   end
 
   def push(pid, item) do
-    GenServer.cast pid, {:push, item}
+    Agent.update pid, fn stack -> [item | stack] end
   end
 
   def pop(pid) do
-    GenServer.call pid, :pop
-  end
-
-  # GenServer implementation
-  def handle_call(:size, _from, stack) do
-    {:reply, Enum.count(stack), stack}
-  end
-
-  def handle_cast({:push, item}, stack) do
-    {:noreply, [item | stack]}
-  end
-
-  def handle_call(:pop, _from, [item | rest]) do
-    {:reply, item, rest}
+    Agent.get_and_update pid, fn [item | last] ->
+      {item, last}
+    end
   end
 end
