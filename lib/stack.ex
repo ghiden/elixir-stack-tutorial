@@ -1,32 +1,32 @@
 defmodule Stack do
-  def start_link do
-    pid = spawn_link(__MODULE__, :loop, [[]])
-    {:ok, pid}
-  end
+  use GenServer
 
-  def loop(stack) do
-    receive do
-      {:size, sender} ->
-        send(sender, {:ok, Enum.count(stack)})
-      {:push, item} -> stack = [item | stack]
-      {:pop, sender} ->
-        [item | stack] = stack
-        send(sender, {:ok, item})
-    end
-    loop(stack)
+  def start_link do
+    GenServer.start_link __MODULE__, []
   end
 
   def size(pid) do
-    send pid, {:size, self}
-    receive do {:ok, size} -> size end
+    GenServer.call pid, :size
   end
 
   def push(pid, item) do
-    send pid, {:push, item}
+    GenServer.cast pid, {:push, item}
   end
 
   def pop(pid) do
-    send pid, {:pop, self}
-    receive do {:ok, item} -> item end
+    GenServer.call pid, :pop
+  end
+
+  # GenServer implementation
+  def handle_call(:size, _from, stack) do
+    {:reply, Enum.count(stack), stack}
+  end
+
+  def handle_cast({:push, item}, stack) do
+    {:noreply, [item | stack]}
+  end
+
+  def handle_call(:pop, _from, [item | rest]) do
+    {:reply, item, rest}
   end
 end
