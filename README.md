@@ -1,19 +1,11 @@
 # Stack
 
-**TODO: Add description**
+Following the tutorial on Elixir from codeship
+http://blog.codeship.com/statefulness-in-elixir/
 
-## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
+## Run Tests
 
-  1. Add stack to your list of dependencies in `mix.exs`:
-
-        def deps do
-          [{:stack, "~> 0.0.1"}]
-        end
-
-  2. Ensure stack is started before your application:
-
-        def application do
-          [applications: [:stack]]
-        end
+```bash
+mix test
+```
